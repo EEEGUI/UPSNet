@@ -37,7 +37,6 @@ from collections import deque
 from upsnet.config.config import config
 from upsnet.config.parse_args import parse_args
 from lib.utils.logging import create_logger
-
 args = parse_args()
 
 if config.train.use_horovod:
@@ -102,6 +101,7 @@ def adjust_learning_rate(optimizer, iter, config):
     if config.train.lr_schedule == 'poly':
         return lr_poly(config.train.lr, iter, config.train.max_iteration, config.train.warmup_iteration)
 
+
 def upsnet_train():
 
     if is_master:
@@ -112,7 +112,6 @@ def upsnet_train():
 
     # create models
     train_model = eval(config.symbol)().cuda()
-        
     # create optimizer
     params_lr = train_model.get_params_lr()
     # we use custom optimizer and pass lr=1 to support different lr for different weights
@@ -164,8 +163,8 @@ def upsnet_train():
             hvd.broadcast_parameters(train_model.state_dict(), root_rank=0)
     else:
         if is_master:
-            train_model.load_state_dict(torch.load(config.network.pretrained))
-
+            # train_model.load_state_dict(torch.load(config.network.pretrained))
+            pass
         if config.train.use_horovod:
             hvd.broadcast_parameters(train_model.state_dict(), root_rank=0)
 
@@ -230,7 +229,6 @@ def upsnet_train():
                         writer.add_scalar('train_' + l, loss, curr_iter)
                         metric.update(_, _, loss)
                 curr_iter += 1
-
 
                 if curr_iter in config.train.decay_iteration:
                     if is_master:

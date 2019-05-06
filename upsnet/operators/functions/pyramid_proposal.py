@@ -177,7 +177,6 @@ class PyramidProposalFunction(Function):
         proposals = np.vstack(proposal_list)
         scores = np.vstack(score_list)
 
-
         if not self.individual_proposals:
             # 4. sort all (proposal, score) pairs by score from highest to lowest
             # 5. take top pre_nms_topN (e.g. 6000)

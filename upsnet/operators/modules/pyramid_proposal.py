@@ -16,9 +16,11 @@
 import torch
 from torch.nn.modules.module import Module
 from ..functions.pyramid_proposal import PyramidProposalFunction
+
 from torch.autograd import Variable
 import pickle
 import numpy as np
+
 
 class PyramidProposal(Module):
     def __init__(self, feat_stride, scales, ratios, rpn_pre_nms_top_n, rpn_post_nms_top_n, threshold, rpn_min_size, individual_proposals=False, use_softnms=False):
@@ -39,7 +41,6 @@ class PyramidProposal(Module):
 
         if roidb is not None:
             roidb = pickle.loads(roidb.astype(np.uint8).tobytes())
-
 
         for i in range(im_info.shape[0]):
             if roidb is not None:

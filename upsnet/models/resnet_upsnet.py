@@ -46,7 +46,7 @@ class resnet_upsnet(resnet_rcnn):
         # FPN, RPN, Instance Head and Semantic Head
         self.fpn = FPN(feature_dim=config.network.fpn_feature_dim, with_norm=config.network.fpn_with_norm,
                         upsample_method=config.network.fpn_upsample_method)
-        self.rpn =  RPN(num_anchors=config.network.num_anchors, input_dim=config.network.fpn_feature_dim)
+        self.rpn = RPN(num_anchors=config.network.num_anchors, input_dim=config.network.fpn_feature_dim)
         self.rcnn = RCNN(self.num_classes, self.num_reg_classes, dim_in=config.network.fpn_feature_dim, 
                          with_norm=config.network.rcnn_with_norm)
         self.mask_branch = MaskBranch(self.num_classes, dim_in=config.network.fpn_feature_dim,
@@ -95,21 +95,34 @@ class resnet_upsnet(resnet_rcnn):
             rpn_bbox_pred.append(rpn_bbox_pred_p)
 
         if label is not None:
-            self.pyramid_proposal = PyramidProposal(feat_stride=config.network.rpn_feat_stride, scales=config.network.anchor_scales,
-                                                    ratios=config.network.anchor_ratios, rpn_pre_nms_top_n=config.train.rpn_pre_nms_top_n,
-                                                    rpn_post_nms_top_n=config.train.rpn_post_nms_top_n, threshold=config.train.rpn_nms_thresh,
-                                                    rpn_min_size=config.train.rpn_min_size, individual_proposals=config.train.rpn_individual_proposals)
+            self.pyramid_proposal = PyramidProposal(feat_stride=config.network.rpn_feat_stride,
+                                                    scales=config.network.anchor_scales,
+                                                    ratios=config.network.anchor_ratios,
+                                                    rpn_pre_nms_top_n=config.train.rpn_pre_nms_top_n,
+                                                    rpn_post_nms_top_n=config.train.rpn_post_nms_top_n,
+                                                    threshold=config.train.rpn_nms_thresh,
+                                                    rpn_min_size=config.train.rpn_min_size,
+                                                    individual_proposals=config.train.rpn_individual_proposals)
             self.proposal_target = ProposalMaskTarget(num_classes=self.num_reg_classes,
-                                                      batch_images=config.train.batch_size, batch_rois=config.train.batch_rois,
-                                                      fg_fraction=config.train.fg_fraction, mask_size=config.network.mask_size,
+                                                      batch_images=config.train.batch_size,
+                                                      batch_rois=config.train.batch_rois,
+                                                      fg_fraction=config.train.fg_fraction,
+                                                      mask_size=config.network.mask_size,
                                                       binary_thresh=config.network.binary_thresh)
             rois, _ = self.pyramid_proposal(rpn_cls_prob, rpn_bbox_pred, data['im_info'])
-            rois, cls_label, bbox_target, bbox_inside_weight, bbox_outside_weight, mask_rois, mask_target, roi_has_mask, nongt_inds = self.proposal_target(rois, label['roidb'], data['im_info'])
+
+            rois, cls_label, bbox_target, bbox_inside_weight, bbox_outside_weight, \
+            mask_rois, mask_target, roi_has_mask, nongt_inds \
+                = self.proposal_target(rois, label['roidb'], data['im_info'])
         else:
-            self.pyramid_proposal = PyramidProposal(feat_stride=config.network.rpn_feat_stride, scales=config.network.anchor_scales,
-                                                    ratios=config.network.anchor_ratios, rpn_pre_nms_top_n=config.test.rpn_pre_nms_top_n,
-                                                    rpn_post_nms_top_n=config.test.rpn_post_nms_top_n, threshold=config.test.rpn_nms_thresh,
-                                                    rpn_min_size=config.test.rpn_min_size, individual_proposals=config.train.rpn_individual_proposals)
+            self.pyramid_proposal = PyramidProposal(feat_stride=config.network.rpn_feat_stride,
+                                                    scales=config.network.anchor_scales,
+                                                    ratios=config.network.anchor_ratios,
+                                                    rpn_pre_nms_top_n=config.test.rpn_pre_nms_top_n,
+                                                    rpn_post_nms_top_n=config.test.rpn_post_nms_top_n,
+                                                    threshold=config.test.rpn_nms_thresh,
+                                                    rpn_min_size=config.test.rpn_min_size,
+                                                    individual_proposals=config.train.rpn_individual_proposals)
             rois, _ = self.pyramid_proposal(rpn_cls_prob, rpn_bbox_pred, data['im_info'])
 
         if label is not None and config.train.fcn_with_roi_loss:
@@ -192,7 +205,6 @@ class resnet_upsnet(resnet_rcnn):
             return output
 
         else:
-
 
             rcnn_output = self.rcnn([fpn_p2, fpn_p3, fpn_p4, fpn_p5], rois)
             cls_score, bbox_pred = rcnn_output['cls_score'], rcnn_output['bbox_pred']

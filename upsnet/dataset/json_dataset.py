@@ -55,6 +55,7 @@ import upsnet.mask.mask_transform as segm_utils
 
 from lib.utils.logging import logger
 
+
 class JsonDataset(object):
     """A class representing a COCO json dataset."""
 

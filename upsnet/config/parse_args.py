@@ -19,7 +19,7 @@ from .config import config, update_config
 def parse_args(description=''):
     parser = argparse.ArgumentParser(description=description)
     # general
-    parser.add_argument('--cfg', help='experiment configure file name', required=True, type=str)
+    parser.add_argument('--cfg', help='experiment configure file name', required=False, type=str, default='/home/lin/PycharmProjects/UPSNet/upsnet/experiments/upsnet_resnet50_cityscapes.yaml')
     parser.add_argument('--eval_only', help='if only eval existing results', action='store_true')
 
     args, rest = parser.parse_known_args()

@@ -78,7 +78,7 @@ config.dataset = edict()
 # config.dataset.image_set = ''
 # config.dataset.test_image_set = ''
 # config.dataset.root_path = ''
-# config.dataset.dataset_path = ''
+config.dataset.dataset_path = '/home/lin/Documents/dataset/Cityscapes'
 # config.dataset.num_classes = 0
 # config.dataset.num_seg_classes = 0
 

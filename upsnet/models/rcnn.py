@@ -86,6 +86,7 @@ class MaskBranch(nn.Module):
         mask_score = self.mask_score(mask_deconv1)
         return mask_score
 
+
 class RCNN(nn.Module):
 
     def __init__(self, num_classes, num_reg_classes, pool_size=7, dim_in=256, dim_hidden=1024, with_fpn_pooling=True, with_dpooling=False, with_adaptive_pooling=False, with_heavier_head=False, with_norm='none'):
@@ -144,6 +145,7 @@ class RCNN(nn.Module):
             'bbox_pred': bbox_pred,
             'fc_feat': fc_feat
         }
+
 
 class RCNNLoss(nn.Module):
     def __init__(self):

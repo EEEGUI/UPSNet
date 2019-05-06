@@ -12,6 +12,8 @@
 
 
 import numpy as np
+# import pyximport
+# pyximport.install()
 from .bbox import bbox_overlaps as bbox_overlaps_cython
 
 
